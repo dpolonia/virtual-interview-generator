@@ -1,0 +1,55 @@
+# INTERVIEW GUIDE
+
+## INTRODUCTION
+Hello, thank you for participating in this interview about AI adoption in consulting. I'd like to start with some background questions and then dive into specific areas.
+
+## DEMOGRAPHIC QUESTIONS
+- Company  Focus : What type of AI solutions or
+- Client base : Does your company work with consulting
+- Area of Regulatory Focus : What is the primary area of
+- Engagement with Consulting Industry : To what
+- Area of Speciali sation: : What is your primary
+- Professional Experience : Could you briefly
+
+## RQ1: AI ADOPTION QUESTIONS
+Let's discuss how established AI adoption is within the consulting industry.
+- industry?  Initial Open -Ended Question : How established do you
+- AI Technologies : What specific AI technologies or
+- Perception of Adoption Speed : How would you rate
+- adopting AI solutions?  Lack of adoption : From your perspective,
+- AI Strategy and Implementation : From your
+- industry?  Initial Open -Ended Question : From a regulatory and
+- AI Technologies : Are there specific types of AI
+- Perception of Adoption Speed : From a regulatory
+- - -
+- industry?  Initial Open -Ended Question : Based on your
+- AI Technologies : What types of AI technologies
+- Perception of Adoption Speed : How would you
+- AI Strategy and Implementation : Do you
+
+## RQ3: AUTOMATION & KNOWLEDGE INTERNALIZATION QUESTIONS
+Let's discuss how AI affects consulting firms in terms of automation and knowledge internalization.
+- clients?  Initial Open -Ended Question : How do you see your AI
+- Internalisation of Knowledge by Clients : Do you
+- Impact on Service Demand : What role do technology
+- - -
+- - -
+- clients?  Initial Open -Ended Question : How do you
+- Internalisation of Knowledge by Clients : Do
+- Impact on Service Demand : Are you observing
+
+## RQ4: ETHICAL RISKS QUESTIONS
+Finally, I'd like to explore ethical risks associated with integrating AI in consulting.
+- Initial Open -Ended Question : What are the most
+- Data Privacy Concerns : How do your AI solutions
+- Specific Risks : Have you observed or become aware
+- Initial Open -Ended Question : What are the most
+- Data Privacy Concerns : What regulatory frameworks or
+- - -
+- Initial Open -Ended Question : What do you
+- Data Privacy Concerns : What are the key data
+- Specific Risks : Have you identified or analy sed
+- https://chatgpt.com/share/67ec5fec -5ce8 -8003 -84d2 -e3aba4cef3c7
+
+## CLOSING
+Thank you for your time and insights. Is there anything else you'd like to add before we conclude?

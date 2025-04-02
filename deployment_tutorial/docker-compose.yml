@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  interview-generator:
+    build: 
+      context: ..
+      dockerfile: deployment_tutorial/Dockerfile
+    volumes:
+      - ../data:/app/data
+      - ../exports:/app/exports
+    env_file:
+      - ../.env
+    # Command to be executed when container starts
+    # Uncomment and modify one of these to run a specific command:
+    # command: parse-scripts
+    # command: generate-personas
+    # command: generate-interviews

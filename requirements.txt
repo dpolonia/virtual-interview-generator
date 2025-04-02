@@ -1,0 +1,11 @@
+# requirements.txt
+click
+questionary
+rich
+sqlalchemy
+pandas
+python-dotenv
+openai
+anthropic
+google-generativeai
+datasetsPyPDF2
