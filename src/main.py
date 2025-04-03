@@ -774,24 +774,24 @@ def generate_interviews():
         if not 'model_info' in locals() or not model_info:
             console.print("Selecting AI model for interview generation:")
             model_info = select_ai_model()
-    
-    try:
-        ai_model = AIModelInterface(model_info["provider"], model_info["model"])
         
-        # Get stakeholder categories to interview in this session
-        if len(remaining_categories) > 1:
-            # Allow selecting multiple categories at once
-            selected_categories = questionary.checkbox(
-                "Select stakeholder categories to interview in this session:",
-                choices=remaining_categories
-            ).ask()
+        try:
+            ai_model = AIModelInterface(model_info["provider"], model_info["model"])
             
-            if not selected_categories:
-                console.print("[yellow]No categories selected. Please select at least one category.[/yellow]")
-                continue
-        else:
-            # If only one category remains, use it directly
-            selected_categories = remaining_categories
+            # Get stakeholder categories to interview in this session
+            if len(remaining_categories) > 1:
+                # Allow selecting multiple categories at once
+                selected_categories = questionary.checkbox(
+                    "Select stakeholder categories to interview in this session:",
+                    choices=remaining_categories
+                ).ask()
+                
+                if not selected_categories:
+                    console.print("[yellow]No categories selected. Please select at least one category.[/yellow]")
+                    continue
+            else:
+                # If only one category remains, use it directly
+                selected_categories = remaining_categories
         
         # Process each selected category
         for category_name in selected_categories:
