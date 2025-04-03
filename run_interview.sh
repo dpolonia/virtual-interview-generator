@@ -14,10 +14,32 @@ source venv/bin/activate
 # Check if requirements are installed
 pip freeze | grep -q "anthropic" || pip install -r requirements.txt
 
-# Store API keys
-export ANTHROPIC_API_KEY="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"
-export OPENAI_API_KEY="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"
-export GOOGLE_API_KEY="AIzaSyCFBrW4dMl3uT5s0z3JhvboYwJacGTILYs"
+# Load API keys from .env file if it exists
+if [ -f .env ]; then
+  echo "Loading API keys from .env file..."
+  set -a
+  source .env
+  set +a
+else
+  # Prompt for API keys if not set
+  if [ -z "$ANTHROPIC_API_KEY" ]; then
+    echo "Enter your Anthropic API key (leave empty to skip):"
+    read -s ANTHROPIC_API_KEY
+    export ANTHROPIC_API_KEY
+  fi
+  
+  if [ -z "$OPENAI_API_KEY" ]; then
+    echo "Enter your OpenAI API key (leave empty to skip):"
+    read -s OPENAI_API_KEY
+    export OPENAI_API_KEY
+  fi
+  
+  if [ -z "$GOOGLE_API_KEY" ]; then
+    echo "Enter your Google API key (leave empty to skip):"
+    read -s GOOGLE_API_KEY
+    export GOOGLE_API_KEY
+  fi
+fi
 
 # Check if pandoc is installed for PDF generation
 if ! command -v pandoc &> /dev/null; then
