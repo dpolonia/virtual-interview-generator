@@ -1327,15 +1327,15 @@ Please format your analysis with these clear sections:
         
     except Exception as e:
         console.print(f"[red]Error generating interviews: {str(e)}[/red]")
-            
-            # Ask if user wants to continue despite error
-            continue_after_error = questionary.confirm(
-                "Would you like to continue with the next categories despite the error?",
-                default=True
-            ).ask()
-            
-            if not continue_after_error:
-                break
+        
+        # Ask if user wants to continue despite error
+        continue_after_error = questionary.confirm(
+            "Would you like to continue with the next categories despite the error?",
+            default=True
+        ).ask()
+        
+        if not continue_after_error:
+            break
     
     # Final summary
     console.print("\n[bold green]Interview Generation Complete[/bold green]")
