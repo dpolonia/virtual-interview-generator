@@ -475,25 +475,31 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
     with open(md_filepath, 'w', encoding='utf-8') as f:
         f.write(md_content)
     
-    # Try to create PDF (if pandoc is available)
+    # Try to create PDF using pypandoc if available, or fall back to command-line pandoc
     pdf_filename = f"{stakeholder_category}_{safe_name}.pdf"
     pdf_filepath = os.path.join(individual_dir, pdf_filename)
     
-    # Check if pandoc is installed before attempting conversion
-    pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
-    if pandoc_installed:
+    try:
+        # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
-            # Run pandoc and capture the exit code
-            exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
-            if exit_code == 0 and os.path.exists(pdf_filepath):
-                console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
+            import pypandoc
+            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
+            console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
+        except ImportError:
+            # If pypandoc is not installed, try command-line pandoc
+            pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
+            if pandoc_installed:
+                # Run pandoc and capture the exit code
+                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                if exit_code == 0 and os.path.exists(pdf_filepath):
+                    console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
+                else:
+                    console.print(f"[yellow]Failed to create PDF: pandoc returned error code {exit_code}[/yellow]")
             else:
-                console.print(f"[yellow]Failed to create PDF: pandoc returned error code {exit_code}[/yellow]")
-        except Exception as e:
-            console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
-    else:
-        # Don't show error message for every file if pandoc is not installed
-        pass
+                # Silently continue if neither pypandoc nor pandoc is available
+                pass
+    except Exception as e:
+        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
     
     return md_filepath
 
@@ -516,25 +522,31 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
     with open(md_filepath, 'w', encoding='utf-8') as f:
         f.write(md_content)
     
-    # Try to create PDF (if pandoc is available)
+    # Try to create PDF using pypandoc if available, or fall back to command-line pandoc
     pdf_filename = f"{stakeholder_category}_analysis.pdf"
     pdf_filepath = os.path.join(stakeholder_dir, pdf_filename)
     
-    # Check if pandoc is installed before attempting conversion
-    pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
-    if pandoc_installed:
+    try:
+        # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
-            # Run pandoc and capture the exit code
-            exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
-            if exit_code == 0 and os.path.exists(pdf_filepath):
-                console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
+            import pypandoc
+            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
+            console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
+        except ImportError:
+            # If pypandoc is not installed, try command-line pandoc
+            pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
+            if pandoc_installed:
+                # Run pandoc and capture the exit code
+                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                if exit_code == 0 and os.path.exists(pdf_filepath):
+                    console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
+                else:
+                    console.print(f"[yellow]Failed to create PDF summary: pandoc returned error code {exit_code}[/yellow]")
             else:
-                console.print(f"[yellow]Failed to create PDF summary: pandoc returned error code {exit_code}[/yellow]")
-        except Exception as e:
-            console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
-    else:
-        # Don't show error message for every file if pandoc is not installed
-        pass
+                # Silently continue if neither pypandoc nor pandoc is available
+                pass
+    except Exception as e:
+        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
     
     return md_filepath
 
@@ -552,25 +564,31 @@ def save_final_report(report_text, timestamp, reports_dir):
     with open(md_filepath, 'w', encoding='utf-8') as f:
         f.write(report_text)
     
-    # Try to create PDF (if pandoc is available)
+    # Try to create PDF using pypandoc if available, or fall back to command-line pandoc
     pdf_filename = f"comprehensive_report_{timestamp}.pdf"
     pdf_filepath = os.path.join(summary_dir, pdf_filename)
     
-    # Check if pandoc is installed before attempting conversion
-    pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
-    if pandoc_installed:
+    try:
+        # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
-            # Run pandoc and capture the exit code
-            exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
-            if exit_code == 0 and os.path.exists(pdf_filepath):
-                console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
+            import pypandoc
+            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
+            console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
+        except ImportError:
+            # If pypandoc is not installed, try command-line pandoc
+            pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
+            if pandoc_installed:
+                # Run pandoc and capture the exit code
+                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                if exit_code == 0 and os.path.exists(pdf_filepath):
+                    console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
+                else:
+                    console.print(f"[yellow]Failed to create PDF report: pandoc returned error code {exit_code}[/yellow]")
             else:
-                console.print(f"[yellow]Failed to create PDF report: pandoc returned error code {exit_code}[/yellow]")
-        except Exception as e:
-            console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
-    else:
-        # Don't show error message for every file if pandoc is not installed
-        pass
+                # Silently continue if neither pypandoc nor pandoc is available
+                pass
+    except Exception as e:
+        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
     
     return md_filepath
 
@@ -620,25 +638,31 @@ def save_presentation(report_text, timestamp, reports_dir):
     with open(md_filepath, 'w', encoding='utf-8') as f:
         f.write(md_content)
     
-    # Try to create PDF (if pandoc is available)
+    # Try to create PDF using pypandoc if available, or fall back to command-line pandoc
     pdf_filename = f"key_findings_{timestamp}.pdf"
     pdf_filepath = os.path.join(presentation_dir, pdf_filename)
     
-    # Check if pandoc is installed before attempting conversion
-    pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
-    if pandoc_installed:
+    try:
+        # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
-            # Run pandoc and capture the exit code
-            exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
-            if exit_code == 0 and os.path.exists(pdf_filepath):
-                console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
+            import pypandoc
+            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
+            console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
+        except ImportError:
+            # If pypandoc is not installed, try command-line pandoc
+            pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
+            if pandoc_installed:
+                # Run pandoc and capture the exit code
+                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                if exit_code == 0 and os.path.exists(pdf_filepath):
+                    console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
+                else:
+                    console.print(f"[yellow]Failed to create PDF presentation: pandoc returned error code {exit_code}[/yellow]")
             else:
-                console.print(f"[yellow]Failed to create PDF presentation: pandoc returned error code {exit_code}[/yellow]")
-        except Exception as e:
-            console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
-    else:
-        # Don't show error message for every file if pandoc is not installed
-        pass
+                # Silently continue if neither pypandoc nor pandoc is available
+                pass
+    except Exception as e:
+        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
     
     return md_filepath
 
@@ -1084,15 +1108,70 @@ def main():
     console.print(f"  - Interview combinations: {combinations_file}")
     console.print(f"  - Interview summary: {summary_file}")
     
-    # Check for pandoc and suggest installation if not available
-    if not os.system("which pandoc > /dev/null 2>&1") == 0:
-        console.print("[yellow]Note: PDF generation was skipped because pandoc is not installed.[/yellow]")
-        install_pandoc = questionary.confirm(
-            "Would you like to install pandoc now for PDF generation?",
-            default=True
+    # Check for PDF generation capabilities and offer installation if needed
+    try:
+        # First check if pypandoc is available
+        import pypandoc
+        pypandoc_available = True
+    except ImportError:
+        pypandoc_available = False
+        # Then check if system pandoc is available
+        pandoc_available = os.system("which pandoc > /dev/null 2>&1") == 0
+    
+    if not pypandoc_available and not pandoc_available:
+        console.print("[yellow]Note: PDF generation was skipped because neither pypandoc nor pandoc is installed.[/yellow]")
+        install_option = questionary.select(
+            "How would you like to enable PDF generation?",
+            choices=[
+                "Install pypandoc in the virtual environment (recommended)",
+                "Install system pandoc (requires admin privileges)",
+                "Skip PDF generation"
+            ]
         ).ask()
         
-        if install_pandoc:
+        if "pypandoc" in install_option:
+            console.print("[cyan]Installing pypandoc in the virtual environment...[/cyan]")
+            exit_code = os.system("pip install pypandoc markdown2pdf")
+            
+            if exit_code == 0:
+                console.print("[green]Pypandoc installed successfully![/green]")
+                console.print("[cyan]Do you want to convert the generated Markdown files to PDF now?[/cyan]")
+                convert_now = questionary.confirm("Convert existing Markdown files to PDF?", default=True).ask()
+                
+                if convert_now:
+                    try:
+                        # Try to import the newly installed pypandoc
+                        import pypandoc
+                        console.print("[cyan]Converting Markdown files to PDF...[/cyan]")
+                        
+                        # Find all markdown files in the exports directory
+                        md_files = []
+                        for root, _, files in os.walk(base_dir):
+                            for file in files:
+                                if file.endswith(".md"):
+                                    md_files.append(os.path.join(root, file))
+                        
+                        if md_files:
+                            with Progress() as progress:
+                                convert_task = progress.add_task("[green]Converting files...", total=len(md_files))
+                                # Convert each markdown file to PDF
+                                for md_file in md_files:
+                                    try:
+                                        pdf_file = md_file.replace(".md", ".pdf")
+                                        pypandoc.convert_file(md_file, 'pdf', outputfile=pdf_file)
+                                        progress.update(convert_task, advance=1)
+                                    except Exception as e:
+                                        console.print(f"[yellow]Error converting {md_file}: {str(e)}[/yellow]")
+                            
+                            console.print(f"[green]Converted {len(md_files)} Markdown files to PDF.[/green]")
+                        else:
+                            console.print("[yellow]No Markdown files found in the exports directory.[/yellow]")
+                    except Exception as e:
+                        console.print(f"[red]Error using pypandoc: {str(e)}[/red]")
+            else:
+                console.print("[red]Failed to install pypandoc. PDF conversion is not available.[/red]")
+        
+        elif "system pandoc" in install_option:
             console.print("[cyan]Installing pandoc and LaTeX requirements...[/cyan]")
             os.system("sudo apt-get update && sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended")
             
@@ -1125,7 +1204,8 @@ def main():
                         console.print("[yellow]No Markdown files found in the exports directory.[/yellow]")
             else:
                 console.print("[red]Failed to install pandoc. PDF conversion is not available.[/red]")
-                console.print("[yellow]You can try installing pandoc manually with: sudo apt-get install pandoc texlive-latex-base[/yellow]")
+        else:
+            console.print("[yellow]Skipping PDF generation. All content is still available in Markdown format.[/yellow]")
     else:
         console.print("[green]PDF generation completed. All documents are available in both Markdown and PDF formats.[/green]")
     

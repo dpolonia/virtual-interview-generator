@@ -15,7 +15,11 @@ tqdm>=4.65.0
 markdown>=3.4.0
 python-pptx>=0.6.21
 
-# Optional: For report conversion to different formats
-# Uncomment these as needed
-# weasyprint>=59.0  # For PDF generation
-# pdfkit>=1.0.0     # Alternative PDF generator
+# For report conversion to different formats
+pypandoc>=1.11.0    # Python wrapper for pandoc (preferred)
+markdown>=3.4.0     # Markdown processing
+weasyprint>=59.0    # Alternative for PDF generation
+
+# PDF generation with pypandoc (includes pandoc binaries)
+pypandoc>=1.11.0
+markdown2pdf>=0.1.4
