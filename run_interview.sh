@@ -52,10 +52,79 @@ else
   fi
 fi
 
-# Check if pandoc is installed for PDF generation
+# Check for dependencies required for PDF generation
+echo "Checking PDF generation dependencies..."
+
+# Check if pandoc is installed
 if ! command -v pandoc &> /dev/null; then
-  echo "Pandoc is not installed. PDFs cannot be generated without it."
-  echo "After running the script, you'll be prompted to install pandoc."
+  echo "Warning: Pandoc is not installed. PDFs cannot be generated without it."
+  MISSING_DEPS=1
+else
+  echo "✓ Pandoc is installed."
+fi
+
+# Check if pypandoc is installed
+if ! pip show pypandoc &> /dev/null; then
+  echo "Warning: Python package pypandoc is not installed."
+  MISSING_DEPS=1
+else
+  echo "✓ Python package pypandoc is installed."
+fi
+
+# Check for LaTeX packages
+LATEX_ISSUE=0
+
+# Check for texlive-latex-base
+if ! dpkg-query -W -f='${Status}' texlive-latex-base 2>/dev/null | grep -q "install ok installed"; then
+  echo "Warning: texlive-latex-base is not installed."
+  LATEX_ISSUE=1
+else
+  echo "✓ texlive-latex-base is installed."
+fi
+
+# Check for texlive-fonts-recommended
+if ! dpkg-query -W -f='${Status}' texlive-fonts-recommended 2>/dev/null | grep -q "install ok installed"; then
+  echo "Warning: texlive-fonts-recommended is not installed."
+  LATEX_ISSUE=1
+else
+  echo "✓ texlive-fonts-recommended is installed."
+fi
+
+# Check for texlive-latex-extra (contains xcolor.sty and other required packages)
+if ! dpkg-query -W -f='${Status}' texlive-latex-extra 2>/dev/null | grep -q "install ok installed"; then
+  echo "Warning: texlive-latex-extra is not installed."
+  LATEX_ISSUE=1
+else
+  echo "✓ texlive-latex-extra is installed."
+fi
+
+# Explicit check for xcolor.sty
+if ! find /usr -name "xcolor.sty" 2>/dev/null | grep -q "xcolor.sty"; then
+  echo "Warning: LaTeX package 'xcolor.sty' not found. PDF generation will fail."
+  LATEX_ISSUE=1
+else
+  echo "✓ LaTeX package xcolor.sty is available."
+fi
+
+# Provide installation instructions if there are missing dependencies
+if [ "$LATEX_ISSUE" -eq 1 ]; then
+  echo ""
+  echo "LaTeX packages are required for PDF generation. Please run:"
+  echo "sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra"
+  echo ""
+  echo "After installing, try running the script again."
+  echo "Alternatively, you can continue without PDF generation capabilities."
+  echo ""
+  
+  # Ask if the user wants to install the packages now
+  read -p "Do you want to install the LaTeX packages now? (y/n) " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Installing LaTeX packages..."
+    sudo apt-get update
+    sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra
+    echo "LaTeX packages installation completed."
+  fi
 fi
 
 # Create necessary base directories

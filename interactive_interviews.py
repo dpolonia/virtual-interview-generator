@@ -483,23 +483,64 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
-            console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
+            # Capture and redirect potential stderr output
+            temp_stderr = os.dup(2)
+            os.close(2)
+            temp_file = open(os.devnull, 'w')
+            os.dup2(temp_file.fileno(), 2)
+            
+            # Try the conversion with extra args to help with LaTeX packages
+            pypandoc.convert_file(
+                md_filepath, 
+                'pdf', 
+                outputfile=pdf_filepath,
+                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
+            )
+            
+            # Restore stderr
+            os.close(2)
+            os.dup2(temp_stderr, 2)
+            temp_file.close()
+            
+            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
+                console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
+            else:
+                raise Exception("PDF file was not created or is empty")
+                
         except ImportError:
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc and capture the exit code
-                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                # Run pandoc with xelatex engine which has better Unicode support
+                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
                 else:
-                    console.print(f"[yellow]Failed to create PDF: pandoc returned error code {exit_code}[/yellow]")
+                    error_msg = ""
+                    # Try to capture the error message for debugging
+                    temp_error_file = os.path.join(individual_dir, "pandoc_error.log")
+                    os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    if os.path.exists(temp_error_file):
+                        with open(temp_error_file, 'r') as f:
+                            error_msg = f.read().strip()
+                        os.remove(temp_error_file)
+                    
+                    if "xcolor.sty" in error_msg:
+                        console.print(f"[yellow]Failed to create PDF: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+                    else:
+                        console.print(f"[yellow]Failed to create PDF: pandoc returned error code {exit_code}[/yellow]")
+                        if error_msg:
+                            console.print(f"[dim]Error details: {error_msg}[/dim]")
             else:
                 # Silently continue if neither pypandoc nor pandoc is available
                 pass
     except Exception as e:
-        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
+        error_msg = str(e)
+        if "xcolor.sty" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        else:
+            console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
+            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
     
     return md_filepath
 
@@ -530,23 +571,64 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
-            console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
+            # Capture and redirect potential stderr output
+            temp_stderr = os.dup(2)
+            os.close(2)
+            temp_file = open(os.devnull, 'w')
+            os.dup2(temp_file.fileno(), 2)
+            
+            # Try the conversion with extra args to help with LaTeX packages
+            pypandoc.convert_file(
+                md_filepath, 
+                'pdf', 
+                outputfile=pdf_filepath,
+                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
+            )
+            
+            # Restore stderr
+            os.close(2)
+            os.dup2(temp_stderr, 2)
+            temp_file.close()
+            
+            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
+                console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
+            else:
+                raise Exception("PDF file was not created or is empty")
+                
         except ImportError:
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc and capture the exit code
-                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                # Run pandoc with xelatex engine which has better Unicode support
+                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
                 else:
-                    console.print(f"[yellow]Failed to create PDF summary: pandoc returned error code {exit_code}[/yellow]")
+                    error_msg = ""
+                    # Try to capture the error message for debugging
+                    temp_error_file = os.path.join(stakeholder_dir, "pandoc_error.log")
+                    os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    if os.path.exists(temp_error_file):
+                        with open(temp_error_file, 'r') as f:
+                            error_msg = f.read().strip()
+                        os.remove(temp_error_file)
+                    
+                    if "xcolor.sty" in error_msg:
+                        console.print(f"[yellow]Failed to create PDF summary: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+                    else:
+                        console.print(f"[yellow]Failed to create PDF summary: pandoc returned error code {exit_code}[/yellow]")
+                        if error_msg:
+                            console.print(f"[dim]Error details: {error_msg}[/dim]")
             else:
                 # Silently continue if neither pypandoc nor pandoc is available
                 pass
     except Exception as e:
-        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
+        error_msg = str(e)
+        if "xcolor.sty" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        else:
+            console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
+            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
     
     return md_filepath
 
@@ -572,23 +654,64 @@ def save_final_report(report_text, timestamp, reports_dir):
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
-            console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
+            # Capture and redirect potential stderr output
+            temp_stderr = os.dup(2)
+            os.close(2)
+            temp_file = open(os.devnull, 'w')
+            os.dup2(temp_file.fileno(), 2)
+            
+            # Try the conversion with extra args to help with LaTeX packages
+            pypandoc.convert_file(
+                md_filepath, 
+                'pdf', 
+                outputfile=pdf_filepath,
+                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
+            )
+            
+            # Restore stderr
+            os.close(2)
+            os.dup2(temp_stderr, 2)
+            temp_file.close()
+            
+            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
+                console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
+            else:
+                raise Exception("PDF file was not created or is empty")
+                
         except ImportError:
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc and capture the exit code
-                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                # Run pandoc with xelatex engine which has better Unicode support
+                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
                 else:
-                    console.print(f"[yellow]Failed to create PDF report: pandoc returned error code {exit_code}[/yellow]")
+                    error_msg = ""
+                    # Try to capture the error message for debugging
+                    temp_error_file = os.path.join(summary_dir, "pandoc_error.log")
+                    os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    if os.path.exists(temp_error_file):
+                        with open(temp_error_file, 'r') as f:
+                            error_msg = f.read().strip()
+                        os.remove(temp_error_file)
+                    
+                    if "xcolor.sty" in error_msg:
+                        console.print(f"[yellow]Failed to create PDF report: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+                    else:
+                        console.print(f"[yellow]Failed to create PDF report: pandoc returned error code {exit_code}[/yellow]")
+                        if error_msg:
+                            console.print(f"[dim]Error details: {error_msg}[/dim]")
             else:
                 # Silently continue if neither pypandoc nor pandoc is available
                 pass
     except Exception as e:
-        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
+        error_msg = str(e)
+        if "xcolor.sty" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        else:
+            console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
+            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
     
     return md_filepath
 
@@ -646,23 +769,68 @@ def save_presentation(report_text, timestamp, reports_dir):
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            pypandoc.convert_file(md_filepath, 'pdf', outputfile=pdf_filepath)
-            console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
+            # Capture and redirect potential stderr output
+            temp_stderr = os.dup(2)
+            os.close(2)
+            temp_file = open(os.devnull, 'w')
+            os.dup2(temp_file.fileno(), 2)
+            
+            # Try the conversion with extra args to help with LaTeX packages
+            pypandoc.convert_file(
+                md_filepath, 
+                'pdf', 
+                outputfile=pdf_filepath,
+                extra_args=[
+                    '--pdf-engine=xelatex', 
+                    '-V', 'geometry:margin=1in',
+                    '--slide-level=2'  # Treat level 2 headers as slides
+                ]
+            )
+            
+            # Restore stderr
+            os.close(2)
+            os.dup2(temp_stderr, 2)
+            temp_file.close()
+            
+            if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
+                console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
+            else:
+                raise Exception("PDF file was not created or is empty")
+                
         except ImportError:
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc and capture the exit code
-                exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
+                # Run pandoc with xelatex engine which has better Unicode support
+                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in --slide-level=2 -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF presentation to {pdf_filepath}[/green]")
                 else:
-                    console.print(f"[yellow]Failed to create PDF presentation: pandoc returned error code {exit_code}[/yellow]")
+                    error_msg = ""
+                    # Try to capture the error message for debugging
+                    temp_error_file = os.path.join(presentation_dir, "pandoc_error.log")
+                    os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    if os.path.exists(temp_error_file):
+                        with open(temp_error_file, 'r') as f:
+                            error_msg = f.read().strip()
+                        os.remove(temp_error_file)
+                    
+                    if "xcolor.sty" in error_msg:
+                        console.print(f"[yellow]Failed to create PDF presentation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+                    else:
+                        console.print(f"[yellow]Failed to create PDF presentation: pandoc returned error code {exit_code}[/yellow]")
+                        if error_msg:
+                            console.print(f"[dim]Error details: {error_msg}[/dim]")
             else:
                 # Silently continue if neither pypandoc nor pandoc is available
                 pass
     except Exception as e:
-        console.print(f"[yellow]Error during PDF creation: {str(e)}[/yellow]")
+        error_msg = str(e)
+        if "xcolor.sty" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        else:
+            console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
+            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
     
     return md_filepath
 
@@ -1118,23 +1286,47 @@ def main():
         # Then check if system pandoc is available
         pandoc_available = os.system("which pandoc > /dev/null 2>&1") == 0
     
-    if not pypandoc_available and not pandoc_available:
-        console.print("[yellow]Note: PDF generation was skipped because neither pypandoc nor pandoc is installed.[/yellow]")
+    # Check if latex packages are installed (specifically check for xcolor.sty)
+    latex_extra_installed = False
+    if os.system("dpkg-query -W -f='${Status}' texlive-latex-extra 2>/dev/null | grep 'install ok installed'") == 0:
+        latex_extra_installed = True
+    elif os.system("find /usr -name 'xcolor.sty' 2>/dev/null | grep -q 'xcolor.sty'") == 0:
+        latex_extra_installed = True
+    
+    pdf_generation_issue = not (pypandoc_available or pandoc_available) or not latex_extra_installed
+    
+    if pdf_generation_issue:
+        console.print("[yellow]PDF generation issue detected.[/yellow]")
+        
+        if not pypandoc_available and not pandoc_available:
+            console.print("[yellow]Neither pypandoc nor pandoc is installed.[/yellow]")
+        
+        if not latex_extra_installed:
+            console.print("[yellow]LaTeX package 'xcolor.sty' not found. This is required for PDF generation.[/yellow]")
+        
         install_option = questionary.select(
-            "How would you like to enable PDF generation?",
+            "How would you like to fix PDF generation?",
             choices=[
-                "Install pypandoc in the virtual environment (recommended)",
-                "Install system pandoc (requires admin privileges)",
+                "Install all requirements (pypandoc + LaTeX packages) - recommended",
+                "Install system requirements only (requires admin privileges)",
                 "Skip PDF generation"
             ]
         ).ask()
         
-        if "pypandoc" in install_option:
+        if "all requirements" in install_option:
             console.print("[cyan]Installing pypandoc in the virtual environment...[/cyan]")
             exit_code = os.system("pip install pypandoc markdown2pdf")
             
-            if exit_code == 0:
-                console.print("[green]Pypandoc installed successfully![/green]")
+            # Also install system dependencies
+            console.print("[cyan]Installing LaTeX requirements (requires admin privileges)...[/cyan]")
+            os.system("sudo apt-get update && sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra")
+            
+            # Verify all installations
+            pypandoc_ok = os.system("pip show pypandoc > /dev/null 2>&1") == 0
+            latex_ok = os.system("dpkg-query -W -f='${Status}' texlive-latex-extra 2>/dev/null | grep 'install ok installed'") == 0
+            
+            if pypandoc_ok and latex_ok:
+                console.print("[green]All PDF generation requirements installed successfully![/green]")
                 console.print("[cyan]Do you want to convert the generated Markdown files to PDF now?[/cyan]")
                 convert_now = questionary.confirm("Convert existing Markdown files to PDF?", default=True).ask()
                 
@@ -1169,15 +1361,22 @@ def main():
                     except Exception as e:
                         console.print(f"[red]Error using pypandoc: {str(e)}[/red]")
             else:
-                console.print("[red]Failed to install pypandoc. PDF conversion is not available.[/red]")
+                if not pypandoc_ok:
+                    console.print("[red]Failed to install pypandoc.[/red]")
+                if not latex_ok:
+                    console.print("[red]Failed to install LaTeX packages. This may require manual installation.[/red]")
+                    console.print("[yellow]Try running: sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/yellow]")
         
-        elif "system pandoc" in install_option:
-            console.print("[cyan]Installing pandoc and LaTeX requirements...[/cyan]")
-            os.system("sudo apt-get update && sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended")
+        elif "system requirements" in install_option:
+            console.print("[cyan]Installing pandoc and LaTeX requirements (requires admin privileges)...[/cyan]")
+            os.system("sudo apt-get update && sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra")
             
             # Verify installation
-            if os.system("which pandoc > /dev/null 2>&1") == 0:
-                console.print("[green]Pandoc installed successfully![/green]")
+            pandoc_ok = os.system("which pandoc > /dev/null 2>&1") == 0
+            latex_ok = os.system("dpkg-query -W -f='${Status}' texlive-latex-extra 2>/dev/null | grep 'install ok installed'") == 0
+            
+            if pandoc_ok and latex_ok:
+                console.print("[green]All system dependencies installed successfully![/green]")
                 console.print("[cyan]Do you want to convert the generated Markdown files to PDF now?[/cyan]")
                 convert_now = questionary.confirm("Convert existing Markdown files to PDF?", default=True).ask()
                 
@@ -1203,11 +1402,15 @@ def main():
                     else:
                         console.print("[yellow]No Markdown files found in the exports directory.[/yellow]")
             else:
-                console.print("[red]Failed to install pandoc. PDF conversion is not available.[/red]")
+                if not pandoc_ok:
+                    console.print("[red]Failed to install pandoc.[/red]")
+                if not latex_ok:
+                    console.print("[red]Failed to install LaTeX packages. This may require manual installation.[/red]")
+                    console.print("[yellow]Try running: sudo apt-get install -y texlive-latex-extra[/yellow]")
         else:
             console.print("[yellow]Skipping PDF generation. All content is still available in Markdown format.[/yellow]")
     else:
-        console.print("[green]PDF generation completed. All documents are available in both Markdown and PDF formats.[/green]")
+        console.print("[green]PDF generation capabilities detected. Documents should be available in both Markdown and PDF formats.[/green]")
     
     # Ask user if they want to open the final report (if it exists)
     if report_file and os.path.exists(report_file):
