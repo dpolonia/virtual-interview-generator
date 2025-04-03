@@ -828,12 +828,12 @@ def generate_interviews():
                 except Exception as e:
                     console.print(f"[red]Error loading script: {str(e)}[/red]")
                     continue
-        
-        # Get interviewer personas
-        interviewers = db_manager.get_personas_by_category("interviewer", "interviewer")
-        if not interviewers:
-            console.print("[yellow]No interviewer personas found. Run 'generate_personas' first.[/yellow]")
-            continue
+                
+                # Get interviewer personas
+                interviewers = db_manager.get_personas_by_category("interviewer", "interviewer")
+                if not interviewers:
+                    console.print("[yellow]No interviewer personas found. Run 'generate_personas' first.[/yellow]")
+                    continue
         
         # Create more descriptive choices to better represent personas
         interviewer_choices = []
