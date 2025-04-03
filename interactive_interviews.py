@@ -439,7 +439,29 @@ Please generate a complete research report with these sections:
 Focus on synthesizing insights across stakeholder groups and identifying patterns, contradictions, and consensus points.
 """
 
-    return generate_with_llm(llm_config, report_prompt, max_tokens=8000)
+    # Set max tokens based on the model
+    max_tokens = 4000  # Default for smaller models
+    
+    # Claude 3 Opus and Sonnet models can handle 8000+ tokens
+    if "claude-3-opus" in llm_config["model"] or "claude-3-sonnet" in llm_config["model"]:
+        max_tokens = 8000
+    # Claude 3.5 models can handle higher token counts
+    elif "claude-3-5" in llm_config["model"]:
+        max_tokens = 7000
+    # Claude 3 Haiku models are limited to 4096 tokens
+    elif "claude-3-haiku" in llm_config["model"]:
+        max_tokens = 4000
+    # GPT-4 class models can handle higher token counts
+    elif "gpt-4" in llm_config["model"]:
+        max_tokens = 7000
+    # For Gemini models
+    elif "gemini" in llm_config["model"]:
+        if "flash" in llm_config["model"]:
+            max_tokens = 8000
+        else:
+            max_tokens = 4000
+    
+    return generate_with_llm(llm_config, report_prompt, max_tokens=max_tokens)
 
 def save_interview(interview_text, interviewer, interviewee, stakeholder_category, model_info, timestamp, export_dir):
     """Save an interview to a file."""
@@ -494,12 +516,6 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            # Capture and redirect potential stderr output
-            temp_stderr = os.dup(2)
-            os.close(2)
-            temp_file = open(os.devnull, 'w')
-            os.dup2(temp_file.fileno(), 2)
-            
             # Try with different PDF engines in order of preference
             # First try with pdflatex (most commonly available)
             pdf_engine = "pdflatex"
@@ -511,25 +527,35 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
                     # If neither is available, let pandoc choose
                     pdf_engine = None
             
-            if pdf_engine:
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath,
-                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
-                )
-            else:
-                # Try without specifying an engine
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath
-                )
-            
-            # Restore stderr
-            os.close(2)
-            os.dup2(temp_stderr, 2)
-            temp_file.close()
+            # Use pypandoc with appropriate error handling
+            try:
+                if pdf_engine:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath,
+                        extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                    )
+                else:
+                    # Try without specifying an engine
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+            except Exception as inner_e:
+                console.print(f"[yellow]Error with pypandoc conversion: {str(inner_e)}[/yellow]")
+                console.print("[dim]Trying alternative pypandoc approach...[/dim]")
+                
+                # Try alternative approach without extra args
+                try:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+                except Exception as alt_e:
+                    raise Exception(f"Multiple pypandoc approaches failed: {str(alt_e)}")
             
             if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
                 console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
@@ -620,12 +646,6 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            # Capture and redirect potential stderr output
-            temp_stderr = os.dup(2)
-            os.close(2)
-            temp_file = open(os.devnull, 'w')
-            os.dup2(temp_file.fileno(), 2)
-            
             # Try with different PDF engines in order of preference
             # First try with pdflatex (most commonly available)
             pdf_engine = "pdflatex"
@@ -637,25 +657,35 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
                     # If neither is available, let pandoc choose
                     pdf_engine = None
             
-            if pdf_engine:
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath,
-                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
-                )
-            else:
-                # Try without specifying an engine
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath
-                )
-            
-            # Restore stderr
-            os.close(2)
-            os.dup2(temp_stderr, 2)
-            temp_file.close()
+            # Use pypandoc with appropriate error handling
+            try:
+                if pdf_engine:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath,
+                        extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                    )
+                else:
+                    # Try without specifying an engine
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+            except Exception as inner_e:
+                console.print(f"[yellow]Error with pypandoc conversion: {str(inner_e)}[/yellow]")
+                console.print("[dim]Trying alternative pypandoc approach...[/dim]")
+                
+                # Try alternative approach without extra args
+                try:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+                except Exception as alt_e:
+                    raise Exception(f"Multiple pypandoc approaches failed: {str(alt_e)}")
             
             if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
                 console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
@@ -730,12 +760,6 @@ def save_final_report(report_text, timestamp, reports_dir):
         # First try to use pypandoc (Python wrapper that includes pandoc binaries)
         try:
             import pypandoc
-            # Capture and redirect potential stderr output
-            temp_stderr = os.dup(2)
-            os.close(2)
-            temp_file = open(os.devnull, 'w')
-            os.dup2(temp_file.fileno(), 2)
-            
             # Try with different PDF engines in order of preference
             # First try with pdflatex (most commonly available)
             pdf_engine = "pdflatex"
@@ -747,25 +771,35 @@ def save_final_report(report_text, timestamp, reports_dir):
                     # If neither is available, let pandoc choose
                     pdf_engine = None
             
-            if pdf_engine:
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath,
-                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
-                )
-            else:
-                # Try without specifying an engine
-                pypandoc.convert_file(
-                    md_filepath, 
-                    'pdf', 
-                    outputfile=pdf_filepath
-                )
-            
-            # Restore stderr
-            os.close(2)
-            os.dup2(temp_stderr, 2)
-            temp_file.close()
+            # Use pypandoc with appropriate error handling
+            try:
+                if pdf_engine:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath,
+                        extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                    )
+                else:
+                    # Try without specifying an engine
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+            except Exception as inner_e:
+                console.print(f"[yellow]Error with pypandoc conversion: {str(inner_e)}[/yellow]")
+                console.print("[dim]Trying alternative pypandoc approach...[/dim]")
+                
+                # Try alternative approach without extra args
+                try:
+                    pypandoc.convert_file(
+                        md_filepath, 
+                        'pdf', 
+                        outputfile=pdf_filepath
+                    )
+                except Exception as alt_e:
+                    raise Exception(f"Multiple pypandoc approaches failed: {str(alt_e)}")
             
             if os.path.exists(pdf_filepath) and os.path.getsize(pdf_filepath) > 0:
                 console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
