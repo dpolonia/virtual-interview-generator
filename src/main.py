@@ -2077,6 +2077,9 @@ Your analysis should:
             formats=output_format
         )
         
+    except Exception as e:
+        console.print(f"[red]Error generating report: {str(e)}[/red]")
+        
 def convert_report_to_formats(report_content, base_filename, output_dir, formats):
     """
     Convert a markdown report to various output formats.
