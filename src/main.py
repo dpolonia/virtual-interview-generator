@@ -807,27 +807,27 @@ def generate_interviews():
                 
                 try:
                     with open(json_path, 'r', encoding='utf-8') as f:
-                scripts_data = json.load(f)
-            
-            if category_key not in scripts_data:
-                console.print(f"[yellow]Category {category_name} not found in scripts file.[/yellow]")
-                continue
+                        scripts_data = json.load(f)
+                    
+                    if category_key not in scripts_data:
+                        console.print(f"[yellow]Category {category_name} not found in scripts file.[/yellow]")
+                        continue
+                        
+                    # Format the script from the JSON structure
+                    script_text = ""
+                    if "questions" in scripts_data[category_key]:
+                        for section, questions in scripts_data[category_key]["questions"].items():
+                            script_text += f"{section} Questions:\n"
+                            for question in questions:
+                                script_text += f"- {question}\n"
+                            script_text += "\n"
+                    else:
+                        script_text = scripts_data[category_key].get("script", "")
                 
-            # Format the script from the JSON structure
-            script_text = ""
-            if "questions" in scripts_data[category_key]:
-                for section, questions in scripts_data[category_key]["questions"].items():
-                    script_text += f"{section} Questions:\n"
-                    for question in questions:
-                        script_text += f"- {question}\n"
-                    script_text += "\n"
-            else:
-                script_text = scripts_data[category_key].get("script", "")
-                
-            script = format_script_for_interview(script_text)
-        except Exception as e:
-            console.print(f"[red]Error loading script: {str(e)}[/red]")
-            continue
+                    script = format_script_for_interview(script_text)
+                except Exception as e:
+                    console.print(f"[red]Error loading script: {str(e)}[/red]")
+                    continue
         
         # Get interviewer personas
         interviewers = db_manager.get_personas_by_category("interviewer", "interviewer")
