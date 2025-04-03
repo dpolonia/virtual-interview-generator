@@ -736,9 +736,10 @@ def main():
         
         console.print(f"[green]Downloaded personas for {len(finepersonas)} categories.[/green]")
     
-    # Create output directories with timestamp first
+    # Create output directories with timestamp and model name
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    base_dir = f"exports/{timestamp}"
+    model_short_name = model.split('-')[0] if '-' in model else model  # Extract first part of model name
+    base_dir = f"exports/{timestamp}_{provider}_{model_short_name}"
     exports_dir = f"{base_dir}/interviews"
     reports_dir = f"{base_dir}/reports"
     os.makedirs(exports_dir, exist_ok=True)
