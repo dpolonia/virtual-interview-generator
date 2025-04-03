@@ -500,13 +500,31 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
             temp_file = open(os.devnull, 'w')
             os.dup2(temp_file.fileno(), 2)
             
-            # Try the conversion with extra args to help with LaTeX packages
-            pypandoc.convert_file(
-                md_filepath, 
-                'pdf', 
-                outputfile=pdf_filepath,
-                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
-            )
+            # Try with different PDF engines in order of preference
+            # First try with pdflatex (most commonly available)
+            pdf_engine = "pdflatex"
+            if os.system("which pdflatex > /dev/null 2>&1") != 0:
+                # If pdflatex not available, try xelatex
+                if os.system("which xelatex > /dev/null 2>&1") == 0:
+                    pdf_engine = "xelatex"
+                else:
+                    # If neither is available, let pandoc choose
+                    pdf_engine = None
+            
+            if pdf_engine:
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath,
+                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                )
+            else:
+                # Try without specifying an engine
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath
+                )
             
             # Restore stderr
             os.close(2)
@@ -522,15 +540,28 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc with xelatex engine which has better Unicode support
-                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                # Try with pdflatex first (more commonly available), then xelatex if available
+                if os.system("which pdflatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=pdflatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                elif os.system("which xelatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                else:
+                    # Try without specifying an engine
+                    exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF analysis to {pdf_filepath}[/green]")
                 else:
                     error_msg = ""
                     # Try to capture the error message for debugging
                     temp_error_file = os.path.join(individual_dir, "pandoc_error.log")
-                    os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    
+                    # First try pdflatex for error diagnostics
+                    if os.system("which pdflatex > /dev/null 2>&1") == 0:
+                        os.system(f"pandoc {md_filepath} --pdf-engine=pdflatex -o {pdf_filepath} 2> {temp_error_file}")
+                    elif os.system("which xelatex > /dev/null 2>&1") == 0:
+                        os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -o {pdf_filepath} 2> {temp_error_file}")
+                    else:
+                        os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2> {temp_error_file}")
                     if os.path.exists(temp_error_file):
                         with open(temp_error_file, 'r') as f:
                             error_msg = f.read().strip()
@@ -538,10 +569,14 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
                     
                     if "xcolor.sty" in error_msg:
                         console.print(f"[yellow]Failed to create PDF: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+                    elif "xelatex not found" in error_msg or "pdflatex not found" in error_msg:
+                        console.print(f"[yellow]Failed to create PDF: LaTeX engine not found. Install texlive-xetex package.[/yellow]")
+                        console.print(f"[dim]Run: sudo apt-get install texlive-xetex texlive-latex-extra[/dim]")
                     else:
                         console.print(f"[yellow]Failed to create PDF: pandoc returned error code {exit_code}[/yellow]")
                         if error_msg:
                             console.print(f"[dim]Error details: {error_msg}[/dim]")
+                            console.print(f"[dim]Try installing: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex[/dim]")
             else:
                 # Silently continue if neither pypandoc nor pandoc is available
                 pass
@@ -549,9 +584,12 @@ def save_interview_analysis(analysis_text, interviewer, interviewee, stakeholder
         error_msg = str(e)
         if "xcolor.sty" in error_msg:
             console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        elif "xelatex not found" in error_msg or "pdflatex not found" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: LaTeX engine not found. Install texlive-xetex package.[/yellow]")
+            console.print(f"[dim]Run: sudo apt-get install texlive-xetex texlive-latex-extra[/dim]")
         else:
             console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
-            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
+            console.print("[dim]Try installing all required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex[/dim]")
     
     return md_filepath
 
@@ -588,13 +626,31 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
             temp_file = open(os.devnull, 'w')
             os.dup2(temp_file.fileno(), 2)
             
-            # Try the conversion with extra args to help with LaTeX packages
-            pypandoc.convert_file(
-                md_filepath, 
-                'pdf', 
-                outputfile=pdf_filepath,
-                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
-            )
+            # Try with different PDF engines in order of preference
+            # First try with pdflatex (most commonly available)
+            pdf_engine = "pdflatex"
+            if os.system("which pdflatex > /dev/null 2>&1") != 0:
+                # If pdflatex not available, try xelatex
+                if os.system("which xelatex > /dev/null 2>&1") == 0:
+                    pdf_engine = "xelatex"
+                else:
+                    # If neither is available, let pandoc choose
+                    pdf_engine = None
+            
+            if pdf_engine:
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath,
+                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                )
+            else:
+                # Try without specifying an engine
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath
+                )
             
             # Restore stderr
             os.close(2)
@@ -610,8 +666,14 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc with xelatex engine which has better Unicode support
-                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                # Try with pdflatex first (more commonly available), then xelatex if available
+                if os.system("which pdflatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=pdflatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                elif os.system("which xelatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                else:
+                    # Try without specifying an engine
+                    exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF summary to {pdf_filepath}[/green]")
                 else:
@@ -637,9 +699,12 @@ def save_stakeholder_summary(summary_text, stakeholder_category, timestamp, repo
         error_msg = str(e)
         if "xcolor.sty" in error_msg:
             console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        elif "xelatex not found" in error_msg or "pdflatex not found" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: LaTeX engine not found. Install texlive-xetex package.[/yellow]")
+            console.print(f"[dim]Run: sudo apt-get install texlive-xetex texlive-latex-extra[/dim]")
         else:
             console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
-            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
+            console.print("[dim]Try installing all required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex[/dim]")
     
     return md_filepath
 
@@ -671,13 +736,31 @@ def save_final_report(report_text, timestamp, reports_dir):
             temp_file = open(os.devnull, 'w')
             os.dup2(temp_file.fileno(), 2)
             
-            # Try the conversion with extra args to help with LaTeX packages
-            pypandoc.convert_file(
-                md_filepath, 
-                'pdf', 
-                outputfile=pdf_filepath,
-                extra_args=['--pdf-engine=xelatex', '-V', 'geometry:margin=1in']
-            )
+            # Try with different PDF engines in order of preference
+            # First try with pdflatex (most commonly available)
+            pdf_engine = "pdflatex"
+            if os.system("which pdflatex > /dev/null 2>&1") != 0:
+                # If pdflatex not available, try xelatex
+                if os.system("which xelatex > /dev/null 2>&1") == 0:
+                    pdf_engine = "xelatex"
+                else:
+                    # If neither is available, let pandoc choose
+                    pdf_engine = None
+            
+            if pdf_engine:
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath,
+                    extra_args=[f'--pdf-engine={pdf_engine}', '-V', 'geometry:margin=1in']
+                )
+            else:
+                # Try without specifying an engine
+                pypandoc.convert_file(
+                    md_filepath, 
+                    'pdf', 
+                    outputfile=pdf_filepath
+                )
             
             # Restore stderr
             os.close(2)
@@ -693,8 +776,14 @@ def save_final_report(report_text, timestamp, reports_dir):
             # If pypandoc is not installed, try command-line pandoc
             pandoc_installed = os.system("which pandoc > /dev/null 2>&1") == 0
             if pandoc_installed:
-                # Run pandoc with xelatex engine which has better Unicode support
-                exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                # Try with pdflatex first (more commonly available), then xelatex if available
+                if os.system("which pdflatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=pdflatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                elif os.system("which xelatex > /dev/null 2>&1") == 0:
+                    exit_code = os.system(f"pandoc {md_filepath} --pdf-engine=xelatex -V geometry:margin=1in -o {pdf_filepath} 2>/dev/null")
+                else:
+                    # Try without specifying an engine
+                    exit_code = os.system(f"pandoc {md_filepath} -o {pdf_filepath} 2>/dev/null")
                 if exit_code == 0 and os.path.exists(pdf_filepath):
                     console.print(f"[green]Saved PDF report to {pdf_filepath}[/green]")
                 else:
@@ -720,9 +809,12 @@ def save_final_report(report_text, timestamp, reports_dir):
         error_msg = str(e)
         if "xcolor.sty" in error_msg:
             console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        elif "xelatex not found" in error_msg or "pdflatex not found" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: LaTeX engine not found. Install texlive-xetex package.[/yellow]")
+            console.print(f"[dim]Run: sudo apt-get install texlive-xetex texlive-latex-extra[/dim]")
         else:
             console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
-            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
+            console.print("[dim]Try installing all required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex[/dim]")
     
     return md_filepath
 
@@ -839,9 +931,12 @@ def save_presentation(report_text, timestamp, reports_dir):
         error_msg = str(e)
         if "xcolor.sty" in error_msg:
             console.print(f"[yellow]Error during PDF creation: Missing LaTeX package 'xcolor.sty'. Install texlive-latex-extra package.[/yellow]")
+        elif "xelatex not found" in error_msg or "pdflatex not found" in error_msg:
+            console.print(f"[yellow]Error during PDF creation: LaTeX engine not found. Install texlive-xetex package.[/yellow]")
+            console.print(f"[dim]Run: sudo apt-get install texlive-xetex texlive-latex-extra[/dim]")
         else:
             console.print(f"[yellow]Error during PDF creation: {error_msg}[/yellow]")
-            console.print("[dim]Try installing the required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra[/dim]")
+            console.print("[dim]Try installing all required LaTeX packages with: sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex[/dim]")
     
     return md_filepath
 

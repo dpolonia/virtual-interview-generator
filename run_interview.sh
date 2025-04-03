@@ -74,6 +74,22 @@ fi
 # Check for LaTeX packages
 LATEX_ISSUE=0
 
+# Check for texlive-xetex (provides xelatex)
+if ! command -v xelatex &> /dev/null; then
+  echo "Warning: xelatex is not installed."
+  LATEX_ISSUE=1
+else
+  echo "✓ xelatex is installed."
+fi
+
+# Check for pdflatex as a fallback
+if ! command -v pdflatex &> /dev/null; then
+  echo "Warning: pdflatex is not installed."
+  LATEX_ISSUE=1
+else
+  echo "✓ pdflatex is installed."
+fi
+
 # Check for texlive-latex-base
 if ! dpkg-query -W -f='${Status}' texlive-latex-base 2>/dev/null | grep -q "install ok installed"; then
   echo "Warning: texlive-latex-base is not installed."
@@ -110,7 +126,7 @@ fi
 if [ "$LATEX_ISSUE" -eq 1 ]; then
   echo ""
   echo "LaTeX packages are required for PDF generation. Please run:"
-  echo "sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra"
+  echo "sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex"
   echo ""
   echo "After installing, try running the script again."
   echo "Alternatively, you can continue without PDF generation capabilities."
@@ -122,7 +138,7 @@ if [ "$LATEX_ISSUE" -eq 1 ]; then
   if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Installing LaTeX packages..."
     sudo apt-get update
-    sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra
+    sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex
     echo "LaTeX packages installation completed."
   fi
 fi
