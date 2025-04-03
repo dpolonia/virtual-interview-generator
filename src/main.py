@@ -2299,9 +2299,6 @@ def convert_report_to_formats(report_content, base_filename, output_dir, formats
                 console.print("or: pip install pdfkit")
             except Exception as e:
                 console.print(f"[yellow]Error generating PDF: {str(e)}[/yellow]")
-    
-    except Exception as e:
-        console.print(f"[red]Error generating report: {str(e)}[/red]")
 
 if __name__ == '__main__':
     # Ensure directories exist
