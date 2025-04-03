@@ -1,0 +1,212 @@
+{
+  "senior_executives": {
+    "name": "Senior Executives",
+    "questions": {
+      "Demographic": [
+        "What is your current role and experience with AI in your organization?",
+        "How long have you been involved with AI initiatives?",
+        "What is the size of your consulting practice and which industries do you primarily serve?"
+      ],
+      "RQ1": [
+        "How would you describe the current state of AI adoption in consulting?",
+        "What are the main barriers to AI adoption in your organization?",
+        "Which AI capabilities have had the greatest impact on your consulting services?"
+      ],
+      "RQ2": [
+        "How has AI changed client expectations of consulting services?",
+        "What trends do you foresee in the consulting market due to AI?",
+        "How are you positioning your firm to respond to these market shifts?"
+      ],
+      "RQ3": [
+        "How has AI affected knowledge management within your consulting practice?",
+        "What consulting tasks have been most impacted by automation through AI?",
+        "How has this affected staffing and team composition?"
+      ],
+      "RQ4": [
+        "What ethical considerations guide your AI implementation decisions?",
+        "How do you address concerns about AI replacing consulting jobs?",
+        "What governance structures have you put in place for AI use?"
+      ]
+    }
+  },
+  "ai_specialists": {
+    "name": "AI Specialists",
+    "questions": {
+      "Demographic": [
+        "What is your area of expertise within AI?",
+        "How long have you been working on AI applications for consulting?",
+        "What kinds of AI projects do you typically support?"
+      ],
+      "RQ1": [
+        "What AI technologies are most widely adopted in consulting contexts?",
+        "What technical challenges do you face when implementing AI in consulting?",
+        "How do you measure the success of AI implementations in consulting?"
+      ],
+      "RQ2": [
+        "How is the market for AI expertise in consulting evolving?",
+        "What skills are becoming more or less valuable for AI specialists in consulting?",
+        "How do you see the relationship between AI specialists and traditional consultants changing?"
+      ],
+      "RQ3": [
+        "Which consulting knowledge processes have been most enhanced by AI?",
+        "How has AI changed the way consulting knowledge is captured and transferred?",
+        "What inefficiencies in consulting work has AI been most effective at addressing?"
+      ],
+      "RQ4": [
+        "What ethical frameworks do you apply to AI development in consulting?",
+        "How do you address potential biases in AI systems for consulting applications?",
+        "What safeguards are necessary when implementing AI in consulting contexts?"
+      ]
+    }
+  },
+  "mid_level_consultants": {
+    "name": "Mid-Level Consultants",
+    "questions": {
+      "Demographic": [
+        "What is your role and experience level in consulting?",
+        "How frequently do you interact with AI tools in your daily work?",
+        "What types of projects do you typically work on?"
+      ],
+      "RQ1": [
+        "How has AI changed your day-to-day consulting activities?",
+        "What AI tools do you regularly use in your work?",
+        "What barriers do you face when trying to adopt AI tools?"
+      ],
+      "RQ2": [
+        "How has client demand for AI-related services changed?",
+        "How has AI affected the competitive landscape among consulting firms?",
+        "How has AI changed the skills required for success as a consultant?"
+      ],
+      "RQ3": [
+        "Which aspects of your work have been automated or augmented by AI?",
+        "How has AI affected knowledge sharing within your project teams?",
+        "Has AI changed the pace or quality of your deliverables?"
+      ],
+      "RQ4": [
+        "What ethical concerns arise when using AI in your consulting work?",
+        "How do you maintain appropriate human oversight when using AI tools?",
+        "Do you have concerns about how AI might affect your career trajectory?"
+      ]
+    }
+  },
+  "clients": {
+    "name": "Clients",
+    "questions": {
+      "Demographic": [
+        "What industry is your organization in?",
+        "How frequently does your organization engage with consulting firms?",
+        "What types of consulting services do you typically procure?"
+      ],
+      "RQ1": [
+        "How has AI changed what you expect from consulting engagements?",
+        "How often do consultants utilize AI in the services they provide to you?",
+        "What differences do you notice between consultants with strong AI capabilities versus those without?"
+      ],
+      "RQ2": [
+        "How has AI affected your willingness to pay for consulting services?",
+        "Are you more or less likely to engage consultants for certain tasks due to AI?",
+        "How do you evaluate consulting firms' AI capabilities when selecting providers?"
+      ],
+      "RQ3": [
+        "How has AI changed the level of expertise you expect from consultants?",
+        "Has AI affected the speed or quality of consulting deliverables?",
+        "Do you find consultants are using AI to enhance or replace their analytical work?"
+      ],
+      "RQ4": [
+        "What ethical concerns do you have about consultants using AI?",
+        "How do you ensure appropriate data handling when consultants use AI?",
+        "How do you validate the outputs of consultant-provided AI solutions?"
+      ]
+    }
+  },
+  "technology_providers": {
+    "name": "Technology Providers",
+    "questions": {
+      "Demographic": [
+        "What types of AI technology or solutions does your company provide?",
+        "How long have you been offering solutions to the consulting industry?",
+        "What is your primary customer segment within consulting?"
+      ],
+      "RQ1": [
+        "How mature is AI adoption among consulting firms?",
+        "What are the most common use cases for your technology in consulting?",
+        "What technical challenges are specific to the consulting industry?"
+      ],
+      "RQ2": [
+        "How has demand from consulting firms evolved over the past few years?",
+        "Are consulting firms typically early or late adopters of your technology?",
+        "How do consulting firms differ from other customers in their AI needs?"
+      ],
+      "RQ3": [
+        "How are consulting firms using your technology to augment their knowledge processes?",
+        "Which consulting workflows have been most transformed by your solutions?",
+        "How has consultant productivity changed with your technology?"
+      ],
+      "RQ4": [
+        "What ethical considerations have consulting firms raised about your technology?",
+        "How do you address concerns about consultant displacement due to automation?",
+        "What governance features do consulting firms typically request?"
+      ]
+    }
+  },
+  "regulatory_stakeholders": {
+    "name": "Regulatory Stakeholders",
+    "questions": {
+      "Demographic": [
+        "What is your role in relation to industry regulation or governance?",
+        "How does your work intersect with AI in professional services?",
+        "What regulatory frameworks are most relevant to consulting and AI?"
+      ],
+      "RQ1": [
+        "How prepared are consulting firms for emerging AI regulations?",
+        "What regulatory gaps exist regarding AI use in consulting?",
+        "How do current professional service regulations apply to AI use?"
+      ],
+      "RQ2": [
+        "How might regulatory developments affect the consulting marketplace?",
+        "Are certain consulting service areas more likely to face regulatory scrutiny?",
+        "How might regulations affect competitive dynamics between large and small firms?"
+      ],
+      "RQ3": [
+        "What safeguards should exist around automated knowledge work?",
+        "How should consultants disclose the use of AI in their deliverables?",
+        "What standards should govern AI-assisted advisory work?"
+      ],
+      "RQ4": [
+        "What ethical frameworks should govern AI use in consulting?",
+        "How should liability be assigned for AI-generated consulting advice?",
+        "What oversight mechanisms are appropriate for AI in consulting?"
+      ]
+    }
+  },
+  "industry_analysts": {
+    "name": "Industry Analysts",
+    "questions": {
+      "Demographic": [
+        "What industry segments do you primarily analyze?",
+        "How long have you been covering the consulting sector?",
+        "What is your research focus regarding technology in consulting?"
+      ],
+      "RQ1": [
+        "How would you characterize the current state of AI adoption in consulting?",
+        "Which consulting firms are leading in AI implementation?",
+        "What are the key differentiators between firms regarding AI capabilities?"
+      ],
+      "RQ2": [
+        "How is AI changing the economics of the consulting industry?",
+        "What new business models are emerging due to AI in consulting?",
+        "How is the competitive landscape evolving due to AI capabilities?"
+      ],
+      "RQ3": [
+        "How has AI impacted the knowledge management approaches of consulting firms?",
+        "Which consulting activities have been most transformed by AI?",
+        "How has AI affected the skills and staffing models of consulting firms?"
+      ],
+      "RQ4": [
+        "What ethical issues have emerged around AI use in consulting?",
+        "How are consulting firms addressing concerns about AI transparency?",
+        "What governance best practices are you observing in the industry?"
+      ]
+    }
+  }
+}
