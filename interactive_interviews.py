@@ -235,11 +235,19 @@ def generate_with_llm(llm_config, prompt, max_tokens=4000, max_retries=3, retry_
                 return response.content[0].text
             
             elif provider == "openai":
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=max_tokens
-                )
+                # OpenAI's o1 and o3 models require max_completion_tokens instead of max_tokens
+                if model.startswith('o1-') or model.startswith('o3-'):
+                    response = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_completion_tokens=max_tokens
+                    )
+                else:
+                    response = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": prompt}],
+                        max_tokens=max_tokens
+                    )
                 return response.choices[0].message.content
             
             elif provider == "google":
