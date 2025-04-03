@@ -792,26 +792,26 @@ def generate_interviews():
             else:
                 # If only one category remains, use it directly
                 selected_categories = remaining_categories
-        
-        # Process each selected category
-        for category_name in selected_categories:
-            console.print(f"\n[bold cyan]Generating interviews for: {category_name}[/bold cyan]")
-            category_interviews_generated = 0
-            category_key = get_category_key(category_name)
-        
-        # Load script for this category from the JSON file
-        json_path = "data/scripts/interview_questions.json"
-        if not os.path.exists(json_path):
-            console.print(f"[yellow]Script file not found. Run 'parse_scripts' command first.[/yellow]")
-            return
-        
-        try:
-            with open(json_path, 'r', encoding='utf-8') as f:
+            
+            # Process each selected category
+            for category_name in selected_categories:
+                console.print(f"\n[bold cyan]Generating interviews for: {category_name}[/bold cyan]")
+                category_interviews_generated = 0
+                category_key = get_category_key(category_name)
+            
+                # Load script for this category from the JSON file
+                json_path = "data/scripts/interview_questions.json"
+                if not os.path.exists(json_path):
+                    console.print(f"[yellow]Script file not found. Run 'parse_scripts' command first.[/yellow]")
+                    continue
+                
+                try:
+                    with open(json_path, 'r', encoding='utf-8') as f:
                 scripts_data = json.load(f)
             
             if category_key not in scripts_data:
                 console.print(f"[yellow]Category {category_name} not found in scripts file.[/yellow]")
-                return
+                continue
                 
             # Format the script from the JSON structure
             script_text = ""
@@ -827,13 +827,13 @@ def generate_interviews():
             script = format_script_for_interview(script_text)
         except Exception as e:
             console.print(f"[red]Error loading script: {str(e)}[/red]")
-            return
+            continue
         
         # Get interviewer personas
         interviewers = db_manager.get_personas_by_category("interviewer", "interviewer")
         if not interviewers:
             console.print("[yellow]No interviewer personas found. Run 'generate_personas' first.[/yellow]")
-            return
+            continue
         
         # Create more descriptive choices to better represent personas
         interviewer_choices = []
@@ -942,7 +942,7 @@ def generate_interviews():
         interviewees = db_manager.get_personas_by_category(category_key, "interviewee")
         if not interviewees:
             console.print(f"[yellow]No personas found for category {category_name}. Run 'generate_personas' first and select this category.[/yellow]")
-            return
+            continue
         
         # Create more descriptive choices for interviewees too
         interviewee_choices = []
