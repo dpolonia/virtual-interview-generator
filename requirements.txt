@@ -1,25 +1,27 @@
-# requirements.txt
+# Core dependencies
 click>=8.1.3
 questionary>=2.0.0
 rich>=13.3.5
 sqlalchemy>=2.0.0
 pandas>=2.0.0
 python-dotenv>=1.0.0
-openai>=1.0.0
-anthropic>=0.5.0
-google-generativeai>=0.3.0
+tqdm>=4.65.0
+
+# AI model APIs
+openai>=1.0.0            # For OpenAI GPT models
+anthropic>=0.5.0         # For Anthropic Claude models
+google-generativeai>=0.3.0  # For Google Gemini models
+
+# Data processing
 datasets>=2.12.0
 scikit-learn>=1.2.2
 numpy>=1.24.3
-tqdm>=4.65.0
 markdown>=3.4.0
 python-pptx>=0.6.21
 
-# For report conversion to different formats
-pypandoc>=1.11.0    # Python wrapper for pandoc (preferred)
-markdown>=3.4.0     # Markdown processing
-weasyprint>=59.0    # Alternative for PDF generation
+# PDF generation 
+pypandoc>=1.11.0         # Python wrapper for pandoc (includes pandoc binaries)
+weasyprint>=59.0         # Alternative HTML to PDF converter
 
-# PDF generation with pypandoc (includes pandoc binaries)
-pypandoc>=1.11.0
-markdown2pdf>=0.1.4
+# Note: For successful PDF generation with pypandoc, you need system packages:
+# sudo apt-get install texlive-latex-base texlive-fonts-recommended texlive-latex-extra
