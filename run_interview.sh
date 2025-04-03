@@ -1,6 +1,17 @@
 #!/bin/bash
-
+#
 # Virtual Interview Generator Runner
+# 
+# Usage: ./run_interview.sh [options]
+#
+# Options:
+#   --help                 Show help message
+#   --use-finepersonas     Use the FinePersonas database for enhanced personas
+#   --anthropic-key KEY    Set Anthropic API key
+#   --openai-key KEY       Set OpenAI API key
+#   --google-key KEY       Set Google API key
+
+# Initialize environment and dependencies
 
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
