@@ -1,10 +1,10 @@
-# Virtual Interview Generator
+# Virtual Interview Generator for AI in Consulting Research
 
-A tool for generating simulated interviews between personas about AI in the consulting industry.
+A comprehensive tool for generating simulated interviews between personas about AI in the consulting industry, with advanced analysis and reporting capabilities.
 
 ## Overview
 
-This project creates realistic virtual interviews for research on "The Role of Business Consulting Firms in the Era of Artificial Intelligence." It uses large language models (LLMs) to simulate conversations between interviewers and various stakeholders in the consulting industry.
+This project creates realistic virtual interviews for research on "The Role of Business Consulting Firms in the Era of Artificial Intelligence." It uses large language models (LLMs) to simulate conversations between interviewers and various stakeholders in the consulting industry, analyze the content, and produce structured reports.
 
 ## Features
 
@@ -119,13 +119,13 @@ exports/{timestamp}/
 
 ## PDF Generation
 
-For PDF generation, you need pandoc and basic LaTeX installed:
+For PDF generation, you need pandoc and LaTeX packages installed:
 
 ```bash
-sudo apt-get update && sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended
+sudo apt-get update && sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-xetex
 ```
 
-The script will automatically detect if pandoc is installed and offer to install it if needed.
+The script will automatically detect if pandoc and LaTeX are installed, and will offer to install them if needed. The system supports multiple LaTeX engines (pdflatex, xelatex) with automatic fallback mechanisms.
 
 ## Directory Structure
 
