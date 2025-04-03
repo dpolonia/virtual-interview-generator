@@ -8,4 +8,5 @@ python-dotenv
 openai
 anthropic
 google-generativeai
-datasetsPyPDF2
+datasets
+PyPDF2
