@@ -1,0 +1,42 @@
+name: Branch Protection Rules
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check_branch_protection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if branch protection is enabled
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            console.log(`Checking branch protection rules for ${owner}/${repo}...`);
+            
+            try {
+              const { data: branch } = await github.rest.repos.getBranchProtection({
+                owner,
+                repo,
+                branch: 'main',
+              });
+              
+              console.log('Branch protection is enabled for main branch.');
+            } catch (error) {
+              console.log('Branch protection is not enabled for main branch.');
+              console.log('Please enable branch protection in the GitHub repository settings:');
+              console.log('1. Go to Settings > Branches');
+              console.log('2. Click "Add rule" next to "Branch protection rules"');
+              console.log('3. Enter "main" as the branch name pattern');
+              console.log('4. Select "Require pull request reviews before merging"');
+              console.log('5. Select "Require status checks to pass before merging"');
+              console.log('6. Select "Require branches to be up to date before merging"');
+              console.log('7. Select "Do not allow bypassing the above settings"');
+              console.log('8. Click "Create"');
+              
+              core.setFailed('Branch protection is not enabled for main branch.');
+            }

@@ -1,2 +1,22 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Python files
+*.py text diff=python
+
+# Documents
+*.md text
+*.txt text
+*.pdf binary
+
+# Data files
+*.json text
+*.xml text
+*.db binary
+
+# VSCode files
+.vscode/* text
+
+# Docker files
+Dockerfile text
+docker-compose.yml text
