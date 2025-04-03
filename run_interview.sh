@@ -51,7 +51,7 @@ fi
 mkdir -p exports data/interviews data/personas data/scripts
 
 # Run the interactive interviews script with all API keys
-python interactive_interviews.py --anthropic-key "$ANTHROPIC_API_KEY" --openai-key "$OPENAI_API_KEY" --google-key "$GOOGLE_API_KEY" --use-finepersonas
+python interactive_interviews.py --anthropic-key "$ANTHROPIC_API_KEY" --openai-key "$OPENAI_API_KEY" --google-key "$GOOGLE_API_KEY" "$@"
 
 # Deactivate virtual environment
 deactivate
